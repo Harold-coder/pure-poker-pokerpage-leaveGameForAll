@@ -15,14 +15,23 @@ exports.handler = async (event) => {
             return { statusCode: 404, body: JSON.stringify({ message: 'No players found in the game' }) };
         }
 
-        // Invoke leaveGame for each player
-        const promises = game.players.map(player => 
-            invokeLeaveGame(player.id, gameId));
-        
-        // Wait for all leaveGame invocations to complete
-        await Promise.all(promises);
+        if (!game.gameInProgress) {
+            // Invoke leaveGame for each player
+            const promises = game.players.map(player => {
+                console.log("Player:", player.id);
+                console.log("GameId:", gameId) 
+                console.log("Player:", player);
+                invokeLeaveGame(player.id, gameId)
+            });
+            
+            // Wait for all leaveGame invocations to complete
+            await Promise.all(promises);
 
-        return { statusCode: 200, body: JSON.stringify({ message: 'All players have been processed for leaveGame.' }) };
+            return { statusCode: 200, body: JSON.stringify({ message: 'All players have been processed for leaveGame.' }) };
+        }
+        else {
+            return { statusCode: 400, body: JSON.stringify({ message: 'Game is in progress!' }) };
+        }
     } catch (error) {
         console.error('Error processing leaveGame for all players:', error);
         return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
