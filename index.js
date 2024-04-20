@@ -9,27 +9,22 @@ exports.handler = async (event) => {
     }
 
     try {
-        // Fetch the game state
         const game = await getGameState(gameId);
         if (!game || !game.players || game.players.length === 0) {
             return { statusCode: 404, body: JSON.stringify({ message: 'No players found in the game' }) };
         }
 
         if (!game.gameInProgress) {
-            // Invoke leaveGame for each player
             const promises = game.players.map(player => {
                 console.log("Player:", player.id);
-                console.log("GameId:", gameId) 
-                console.log("Player:", player);
-                invokeLeaveGame(player.id, gameId)
+                console.log("GameId:", gameId);
+                return invokeLeaveGame(player.id, gameId);  // Ensure promises are returned
             });
-            
-            // Wait for all leaveGame invocations to complete
+
             await Promise.all(promises);
 
             return { statusCode: 200, body: JSON.stringify({ message: 'All players have been processed for leaveGame.' }) };
-        }
-        else {
+        } else {
             return { statusCode: 400, body: JSON.stringify({ message: 'Game is in progress!' }) };
         }
     } catch (error) {
@@ -53,12 +48,11 @@ function invokeLeaveGame(playerId, gameId) {
         playerId: playerId
     });
 
-    console.log("Invoking leaveGame!");
-
+    console.log("Invoking leaveGame with payload:", payload);
 
     const params = {
-        FunctionName: 'poker-game-leaveGame', // Ensure this is the correct ARN or function name for your leaveGame lambda
-        InvocationType: 'Event', // Use 'Event' to invoke the function asynchronously
+        FunctionName: 'poker-game-leaveGame', // Ensure this is correctly set
+        InvocationType: 'Event', // Asynchronous invocation
         Payload: payload
     };
 
