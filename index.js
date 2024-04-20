@@ -5,6 +5,7 @@ const gameTableName = process.env.GAME_TABLE;
 
 exports.handler = async (event) => {
     const gameId = event;
+    console.log("GameId:", gameId);
     if (!gameId) {
         return { statusCode: 400, body: JSON.stringify({ message: 'Game ID is required' }) };
     }
