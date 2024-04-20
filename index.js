@@ -1,5 +1,4 @@
 const AWS = require('aws-sdk');
-const lambda = new AWS.Lambda();
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
 exports.handler = async (event) => {
@@ -15,15 +14,9 @@ exports.handler = async (event) => {
         }
 
         if (!game.gameInProgress) {
-            const promises = game.players.map(player => {
-                console.log("Player:", player.id);
-                console.log("GameId:", gameId);
-                return invokeLeaveGame(player.id, gameId);  // Ensure promises are returned
-            });
+            await deleteGame(gameId);
 
-            await Promise.all(promises);
-
-            return { statusCode: 200, body: JSON.stringify({ message: 'All players have been processed for leaveGame.' }) };
+            return { statusCode: 200, body: JSON.stringify({ message: 'Game is deleted!' }) };
         } else {
             return { statusCode: 400, body: JSON.stringify({ message: 'Game is in progress!' }) };
         }
@@ -33,6 +26,18 @@ exports.handler = async (event) => {
     }
 };
 
+// Function to delete a game from the gameSessions table
+async function deleteGame(gameId) {
+    const params = {
+        TableName: gameTableName,
+        Key: {
+            gameId: gameId
+        }
+    };
+
+    await dynamoDb.delete(params).promise();
+}
+
 async function getGameState(gameId) {
     const params = {
         TableName: process.env.GAME_TABLE,
@@ -40,17 +45,4 @@ async function getGameState(gameId) {
     };
     const { Item } = await dynamoDb.get(params).promise();
     return Item;
-}
-
-function invokeLeaveGame(playerId, gameId) {
-    const leaveGamePayload = {
-        gameId: gameId, 
-        playerId: playerId,
-    };
-
-    return lambda.invoke({
-        FunctionName: 'poker-game-leaveGame',
-        InvocationType: 'Event',
-        Payload: JSON.stringify(leaveGamePayload),
-    }).promise();
 }
