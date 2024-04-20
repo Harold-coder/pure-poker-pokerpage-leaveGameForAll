@@ -48,8 +48,6 @@ function invokeLeaveGame(playerId, gameId) {
         playerId: playerId,
     };
 
-    console.log("Invoking leaveGame with payload:", payload);
-
     return lambda.invoke({
         FunctionName: 'poker-game-leaveGame',
         InvocationType: 'Event',
