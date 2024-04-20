@@ -1,5 +1,6 @@
 const AWS = require('aws-sdk');
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
+const gameTableName = process.env.GAME_TABLE;
 
 exports.handler = async (event) => {
     const gameId = event.gameId;
@@ -40,7 +41,7 @@ async function deleteGame(gameId) {
 
 async function getGameState(gameId) {
     const params = {
-        TableName: process.env.GAME_TABLE,
+        TableName: gameTableName,
         Key: { gameId }
     };
     const { Item } = await dynamoDb.get(params).promise();
