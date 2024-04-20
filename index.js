@@ -43,18 +43,16 @@ async function getGameState(gameId) {
 }
 
 function invokeLeaveGame(playerId, gameId) {
-    const payload = JSON.stringify({
-        gameId: gameId,
-        playerId: playerId
-    });
+    const leaveGamePayload = {
+        gameId: gameId, 
+        playerId: playerId,
+    };
 
     console.log("Invoking leaveGame with payload:", payload);
 
-    const params = {
-        FunctionName: 'poker-game-leaveGame', // Ensure this is correctly set
-        InvocationType: 'Event', // Asynchronous invocation
-        Payload: payload
-    };
-
-    return lambda.invoke(params).promise();
+    return lambda.invoke({
+        FunctionName: 'poker-game-leaveGame',
+        InvocationType: 'Event',
+        Payload: JSON.stringify(leaveGamePayload),
+    }).promise();
 }
