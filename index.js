@@ -49,9 +49,12 @@ async function getGameState(gameId) {
 
 function invokeLeaveGame(playerId, gameId) {
     const payload = JSON.stringify({
-        playerId: playerId,
-        gameId: gameId
+        gameId: gameId,
+        playerId: playerId
     });
+
+    console.log("Invoking leaveGame!");
+
 
     const params = {
         FunctionName: 'poker-game-leaveGame', // Ensure this is the correct ARN or function name for your leaveGame lambda
