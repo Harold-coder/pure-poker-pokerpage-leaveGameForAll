@@ -17,8 +17,10 @@ exports.handler = async (event) => {
         }
 
         if (!game.gameInProgress) {
-            const promises = game.players.map(player => 
-                updateChipsBalance(player.id, player.chips));
+            const promises = game.players.map(player => updateChipsBalance(player.id, player.chips));
+
+            console.log("Player Chips:", game.players);
+            console.log("Promises:", promises);
     
             // Wait for all updateChips invocations to complete
             await Promise.all(promises);
