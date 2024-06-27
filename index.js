@@ -12,6 +12,7 @@ exports.handler = async (event) => {
 
     try {
         const game = await getGameState(gameId);
+        console.log(game);
         if (!game || !game.players || game.players.length === 0) {
             return { statusCode: 404, body: JSON.stringify({ message: 'No players found in the game' }) };
         }
@@ -25,6 +26,8 @@ exports.handler = async (event) => {
             // Wait for all updateChips invocations to complete
             await Promise.all(promises);
             await deleteGame(gameId);
+
+            console.log("Done.")
 
             return { statusCode: 200, body: JSON.stringify({ message: 'Game is deleted!' }) };
         } else {
