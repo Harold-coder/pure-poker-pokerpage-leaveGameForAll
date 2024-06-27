@@ -12,7 +12,6 @@ exports.handler = async (event) => {
 
     try {
         const game = await getGameState(gameId);
-        console.log(game);
         if (!game || !game.players || game.players.length === 0) {
             return { statusCode: 404, body: JSON.stringify({ message: 'No players found in the game' }) };
         }
