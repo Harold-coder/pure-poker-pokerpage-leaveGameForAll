@@ -6,7 +6,7 @@ const gameTableName = process.env.GAME_TABLE;
 const sqs = new AWS.SQS({ apiVersion: '2012-11-05' });
 
 exports.handler = async (event) => {
-    const gameId = event.gameId;
+    const { gameId } = JSON.parse(event.body)
     console.log("GameId:", gameId);
     if (!gameId) {
         return { statusCode: 400, body: JSON.stringify({ message: 'Game ID is required' }) };
