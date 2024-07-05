@@ -3,6 +3,8 @@ const mysql = require('mysql');
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 const gameTableName = process.env.GAME_TABLE;
 
+const sqs = new AWS.SQS({ apiVersion: '2012-11-05' });
+
 exports.handler = async (event) => {
     const gameId = event.gameId;
     console.log("GameId:", gameId);
@@ -46,8 +48,17 @@ async function deleteGame(gameId) {
             gameId: gameId
         }
     };
-
     await dynamoDb.delete(params).promise();
+
+    // Construct the SQS queue URL or name from gameId
+    const queueUrl = `https://sqs.us-east-1.amazonaws.com/767398087790/${gameId}.fifo`;
+
+    // Delete the corresponding SQS queue
+    const sqsParams = {
+        QueueUrl: queueUrl
+    };
+    await sqs.deleteQueue(sqsParams).promise();
+    console.log(`SQS queue for game ${gameId} deleted.`);
 }
 
 async function getGameState(gameId) {
